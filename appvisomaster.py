@@ -15,12 +15,17 @@ in_dotenv_needed_params = {
 
 
 import os
-in_files_to_check_in_paths={
-    
-    "MODELS_HOME": f"{os.sep}BSRGANx4.fp16.onnx"
-}
+in_files_to_check_in_paths=[
+    {"MODELS_HOME": f"{os.sep}BSRGANx4.fp16.onnx"},
+    {"MODELS_HOME": f"{os.sep}bpe_simple_vocab_16e6.txt.gz"},
+    {"MODELS_HOME": f"{os.sep}grid_sample_3d_plugin.dll"},
+    {"MODELS_HOME": f"{os.sep}libgrid_sample_3d_plugin.so"},
+    {"MODELS_HOME": f"{os.sep}meanshape_68.pkl"},
+    {"MODELS_HOME": f"{os.sep}media_rc.py"},
+]
 
-#LCX1.01##################################################################
+
+#LCX1.02##################################################################
 #FILELOADER##############################################################
 #########################################################################
 debug_mode=False
@@ -192,12 +197,13 @@ def get_hf_model_cache_dirname(model_id: str) -> str:
     base = "models--"
     return base + model_id.replace('/', '--')
 
-
-def lcx_checkmodels(dotenv_needed_models,dotenv_loaded_paths, dotenv_loaded_models, dotenv_loaded_models_values, in_files_to_check_in_paths=None  ):
-    #TODO: load dynamically from array
+def check_do_all_files_exist(dotenv_needed_models,dotenv_loaded_paths, dotenv_loaded_models, dotenv_loaded_models_values, in_files_to_check_in_paths=None, silent=False  ):
     test_models_hf = []
     test_models_dir=[]
     test_paths_dir=[]
+    
+    retval_models_exist=True
+    retval_paths_exist=True
     
     #add model paths as path and as hf cache path
     for currmodel in dotenv_needed_models:
@@ -211,68 +217,96 @@ def lcx_checkmodels(dotenv_needed_models,dotenv_loaded_paths, dotenv_loaded_mode
     if debug_mode:
         print(f"test pathf hf: {test_models_hf}")
         print(f"test pathf dirs: {test_models_dir}")
-        
-    print(f"{LCX_APP_NAME}: checking model accessibility")
+    
+    if not silent:
+        print(f"{LCX_APP_NAME}: checking model accessibility")
     summary_hf, all_exist_hf, none_exist_hf, path_details_hf = count_existing_paths(test_models_hf)
 
-    print(f"\n-Searching Group1: Model HF_HOME----------------------------------------------")
-    for line in path_details_hf:
-        print_line= remove_suffix(line, "snapshots")
-        print(print_line)
+    if not silent:
+        print(f"\n-Searching Group1: Model HF_HOME----------------------------------------------")
+        for line in path_details_hf:
+            print_line= remove_suffix(line, "snapshots")
+            print(print_line)
 
     summary_dir, all_exist_dir, none_exist_dir, path_details_dir = count_existing_paths(test_models_dir)
-    print("-Searching Group2: Manual Model Directories-----------------------------------")
-    for line in path_details_dir:
-        print_line= remove_suffix(line, "model_index.json")
-        print_line= remove_suffix(print_line, "config.json")
-        print(print_line)
+    if not silent:
+        print("-Searching Group2: Manual Model Directories-----------------------------------")
+        for line in path_details_dir:
+            print_line= remove_suffix(line, "model_index.json")
+            print_line= remove_suffix(print_line, "config.json")
+            print(print_line)
 
     summary_path, all_exist_path, none_exist_path, path_details_path = count_existing_paths(test_paths_dir)
-    print("-Searching Group3: Needed Directories-----------------------------------------")
-    for line in path_details_path:
-        print(line)
+    if not silent:
+        print("-Searching Group3: Needed Directories-----------------------------------------")
+        for line in path_details_path:
+            print(line)
+            
+    if not silent:
+        print("-checking explicite Files---------------------------------------------------")
 
-    for file_to_check in in_files_to_check_in_paths:
-        if dotenv_loaded_paths:            
-            concrete_file_to_check=f"{dotenv_loaded_paths[file_to_check]}{os.sep}{in_files_to_check_in_paths[file_to_check]}"
-            path=Path(concrete_file_to_check)
-            if path.exists():
-                print(f"[!FOUND!]: {concrete_file_to_check}")
-            else:
-                print(f"[!MISSING!]: {concrete_file_to_check}")
-
-    print("")
+    for mapping in in_files_to_check_in_paths:
+        for env_var, relative_path in mapping.items():
+            if dotenv_loaded_paths and env_var in dotenv_loaded_paths:
+                base_path = dotenv_loaded_paths[env_var]
+                full_path = Path(base_path) / relative_path.strip(os.sep)
+                if full_path.exists():
+                    if not silent:
+                        print(f"[!FOUND!]: {full_path}")
+                else:
+                    if not silent:
+                        print(f"[!MISSING!]: {full_path}")
+                    retval_paths_exist = False
+    if not silent:
+        print("")
     #we show the dir values to the user
-    if all_exist_dir==False:
-        print("-Values in config (resolved to your OS)---------------------------------------")
-        for key in dotenv_loaded_models_values:
-            print(f"{key}: {os.path.abspath(dotenv_loaded_models_values[key])}")
-    if all_exist_path==False:
-        for key in dotenv_loaded_paths:
-            print(f"{key}: {os.path.abspath(dotenv_loaded_paths[  key])}")
-
-    print("")
+    if not silent:
+        if all_exist_dir==False:
+            print("-Values in config (resolved to your OS)---------------------------------------")
+            for key in dotenv_loaded_models_values:
+                print(f"{key}: {os.path.abspath(dotenv_loaded_models_values[key])}")
+        if all_exist_path==False:
+            for key in dotenv_loaded_paths:
+                print(f"{key}: {os.path.abspath(dotenv_loaded_paths[  key])}")
+    if not silent:
+        print("")
     
     #Needed Dirs summary
-    if in_dotenv_needed_paths:
+    if in_dotenv_needed_paths and not silent:
         print("-Needed Paths---------------------------------------------------")     
     if in_dotenv_needed_paths and all_exist_path == False:
-        print("Not all paths were found. Check documentation if you need them")
-    if in_dotenv_needed_paths and all_exist_path:
-        print("All Needed PATHS exist.")
+        if not silent:
+            print("Not all paths were found. Check documentation if you need them")
+        retval_paths_exist=False
+    if not silent:
+        if in_dotenv_needed_paths and all_exist_path:
+            print("All Needed PATHS exist.")
     if in_dotenv_needed_models:
-        print("-Needed Models--------------------------------------------------")
+        if not silent:
+            print("-Needed Models--------------------------------------------------")
         #some model directories were missing 
-        if none_exist_dir == False and all_exist_dir == False: 
-            print ("Some manually downloaded models were found. Some might need to be downloaded!")
-        #some hf cache models were missing
-        if  all_exist_hf == False and none_exist_hf==False:
-            print ("Some HF_Download models were found. Some might need to be downloaded!")
-        if none_exist_dir and none_exist_hf:
-            print ("No models were found! Models will be downloaded at next app start")
+            if none_exist_dir == False and all_exist_dir == False: 
+                print ("Some manually downloaded models were found. Some might need to be downloaded!")
+            #some hf cache models were missing
+            if  all_exist_hf == False and none_exist_hf==False:
+                print ("Some HF_Download models were found. Some might need to be downloaded!")
+            if none_exist_dir and none_exist_hf:
+                print ("No models were found! Models will be downloaded at next app start")
 
-        if all_exist_hf==True or all_exist_dir==True:
-            print("RESULT: It seems all models were found. Nothing will be downloaded!") 
+            if all_exist_hf==True or all_exist_dir==True:
+                print("RESULT: It seems all models were found. Nothing will be downloaded!") 
+        if all_exist_hf==False and all_exist_dir==False:
+            retval_models_exist=False
+
+
+    retval_final=retval_models_exist == True and retval_paths_exist ==True
+
+    return retval_final
+        
+
+def lcx_checkmodels(dotenv_needed_models,dotenv_loaded_paths, dotenv_loaded_models, dotenv_loaded_models_values, in_files_to_check_in_paths=None  ):
+    check_do_all_files_exist(dotenv_needed_models,dotenv_loaded_paths, dotenv_loaded_models, dotenv_loaded_models_values, in_files_to_check_in_paths=in_files_to_check_in_paths  )
+
     sys.exit()
 
 # Update the config file
@@ -334,21 +368,21 @@ if debug_mode:
 
 
 #download models if this is missing:
-if not os.path.exists(f"{out_dotenv_loaded_paths['MODELS_HOME']}{os.sep}BSRGANx4.fp16.onnx"):
+if not check_do_all_files_exist(in_dotenv_needed_models,out_dotenv_loaded_paths, out_dotenv_loaded_models, out_dotenv_loaded_models_values, in_files_to_check_in_paths , silent =True):
     print("Needed model missing. Triggering automatic model download....")
+
+    
     from app.helpers.downloader import download_file
-    from app.processors.models_data import models_list
+    from app.processors.models_data import models_list, extra_lib_list
     for model_data in models_list:
         download_file(model_data['model_name'], model_data['local_path'], model_data['hash'], model_data['url'])
     
+    for lib_data in extra_lib_list:
+        download_file(lib_data['model_name'], lib_data['local_path'], lib_data['hash'], lib_data['url'])
+
+    print ("Downlad finished. Restart app!")
+    sys.exit()
  
-
-
-
-
-
-
-
 
 
 

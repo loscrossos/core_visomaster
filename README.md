@@ -2,7 +2,6 @@
 ### VisoMaster is a powerful yet easy-to-use tool for face swapping and editing in images and videos. It utilizes AI to produce natural-looking results with minimal effort, making it ideal for both casual users and professionals.  
 
 ---
-<img src=".github/screenshot.png" height="auto"/>
 
 ## Features  
 
@@ -76,9 +75,7 @@ pip install -r requirements.txt
 **All OSes**
 You can use one of these optional steps (detailed steps below):
 - **Option 1**: automatic model download: just go to the next step and start the app!
-
-- **Option 2**: Manual triggered Model Donwload: enter the `models` dir and use the `maclin_get_models.sh` or `win_get_models.bat`
-- **Option 3**: reuse your models without changing their paths: run  `python appvisomaster.py --checkmodels` after install to generate `configmodels.txt` and edit the paths within the file. run the command again to verify it worked.
+- **Option 2**: reuse your models without changing their paths: run  `python appvisomaster.py --checkmodels` after install to generate `configmodels.txt` and edit the paths within the file. run the command again to verify it worked.
 
 **Run the app**
 
@@ -86,8 +83,6 @@ You can use one of these optional steps (detailed steps below):
 Whenever you want to start the apps open a console in the repository directory, activate your virtual environment:
 
 ```
-MacOS:
-. ./.env_mac/bin/activate
 Windows:
 .env_win\Scripts\activate
 Linux:
@@ -95,9 +90,9 @@ Linux:
 ```
 
 
-start the web-app with:
+start the app with:
 
-`python appvisomaster.py --inbrowser`
+`python appvisomaster.py`
 
 
 Stop the app pressing `ctrl + c` on the console
@@ -123,8 +118,8 @@ Hardware    | **Mac** | **Win/Lin**
 ---         | ---     | ---
 CPU         | n.a.    | Will not be used much. So any modern CPU should do
 VRAM        | n.a.    | Uses 4GB VRAM during generation
-RAM         | n.a.    | Uses some 5GB RAM (peak) during generation
-Disk Space  | n.a.    | 6GB for the models
+RAM         | n.a.    | Uses some 2GB RAM (peak) during generation
+Disk Space  | n.a.    | 11GB for the models
 
 
 
@@ -149,17 +144,16 @@ I am not using Conda but the original Free Open Source Python. This guide assume
 
 **Automated Software development setup**
 
-If you want an automated, beginner friendly but efficient way to setup a software development environment for AI and Python, you can use my other project: CrossOS_Setup, which setups your Mac, Windows or Linux PC automatically to a full fledged AI Software Development station. It includes a system checker to assess how well installed your current setup is, before you install anything:
+If you want a fully free and open source, no strings attached, automated, beginner friendly but efficient way to setup a software development environment for AI and Python, you can use my other project: CrossOS_Setup, which setups your Mac, Windows or Linux PC automatically to a full fledged AI Software Development station. It includes a system checker to assess how well installed your current setup is, before you install anything:
 
 https://github.com/loscrossos/crossos_setup
 
-Thats what i use for all my development across all my systems. Its also fully free and open source. No strings attached!
-
+Thats what i use for all my development across all my systems. All my projects run out of the box if you PC is setup with it.
 
 
 ## Project Installation
 
-If you setup your development environment using my `Crossos_Setup` project, you can do this from a normal non-admin account (which you should actually be doing for your own security).
+If you setup your development environment using my `Crossos_Setup` project, you can do this from a normal non-admin account (which you should actually be doing anyway for your own security).
 
 Hint: "CrossOS" means the commands are valid on MacWinLin
 
@@ -177,12 +171,12 @@ cd core_visomaster
 
 2. Create and activate a python virtual environment  
 
-task       | Mac                         | Windows                   | Linux
----        | ---                         | ---                       | ---
-create venv|`python3.12 -m venv .env_mac`|`py -3.12 -m venv .env_win`|`python3.12 -m venv .env_lin`
-activate it|`. ./.env_mac/bin/activate`  |`.env_win\Scripts\activate`|`. ./.env_lin/bin/activate`
+task       |  Windows                   | Linux
+---        |  ---                       | ---
+create venv|`py -3.12 -m venv .env_win`|`python3.12 -m venv .env_lin`
+activate it|`.env_win\Scripts\activate`|`. ./.env_lin/bin/activate`
 
-At this point you should see at the left of your prompt the name of your environment (e.g. `(.env_mac)`)
+At this point you should see at the left of your prompt the name of your environment (e.g. `(.env_win)`)
 
 
 3. Install the libraries (CrossOS):
@@ -194,14 +188,13 @@ Thats it.
 
 ---
 
-At this point you *could* just start the apps and start generating away... but it would first automatically download the models (6GB of them). If you dont have the models yet thats ok. But if you have already downloaded them OR if you have a dual/trial/multiboot machine and want to make them portable, read on...
+At this point you *could* just start the apps and start generating away... but it would first automatically download the models (11GB of them). If you dont have the models yet thats ok. But if you have already downloaded them OR if you have a dual/trial/multiboot machine and want to make them portable, read on...
 
 
 ## Model Installation
 
 The needed models are about 6GB in total. You can get them in 3 ways:
 - **Automatic Download** as huggingface cache (easiest way)
-- **Manually triggered model download** (reccomended way. second easiest)
 - **Re-use existing models**: hf_download or manual
 
 to see the status of the model recognition start any app with the parameter `--checkmodels`
@@ -215,17 +208,6 @@ just start the app.
 
 Missing models will be downloaded. This is for when you never had the app installed before. The models will be downloaded to a huggingface-type folder in the "models" directory. This is ok if you want the most easy solution and dont care about portability (which is ok!). This is not reccomended as its not very reusable for software developers: e.g. if you want to do coding against the models from another project or want to store the models later. This supports multi-boot.
 
-### Manually triggered automatic download
-
-
-This is the CrossOS reccomended way. change to the the "models" directory (`cd models`) and start the downloader file:
-
-task     | Mac Linux              | Windows   
----      | ---                    | ---       
-manual dl|`./maclin_get_models.sh`|`win_get_models.bat`
-
-
-Models will be downloaded from hugging face. This will take some time as its 6GB of models. let it work.
 
 
 ### Re-use existing models
@@ -245,13 +227,6 @@ If you used the app before you should have a folder called `hf_download` or `hf_
 - move that folder to the `core_visomaster/models` folder and it will be used automatically OR
 - replace the set path with the one of the existing folder in the line with `HF_HOME`. Make sure that the line points only to the single 'hf_download' folder. The app will crawl the sub-directories on its own. You dont need to change any other lines as these will be ignored.
 
-
-
-
-**Re-Use manually downloaded models**
-
-If you downloaded the single models directly from huggingface (git cloning them) you can enter the path of each directory in the single lines of the config file.
-You dont need to set the `HF_HOME` line as it will be ignored if the other paths are set correctly.
 
 
 **Checking that the models are correctly configured**
@@ -274,25 +249,21 @@ You can use app as you always have. Just start the app and be creative!
 
 ## Starting the Apps
 
-- Torch Compile is disabled by default on Windows: To run with torch compile enabled on windows you must do one of these. then you can enable the option in the gradio app or the `configmodel.txt`, else the app will crash when it does not find the C++ compiler ("cl.exe"):
-    - run the app in a MSVC developer console (x64 mode)
-    - Open a normal console and run this before starting the app:
-        - `"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" x64`
 
+The app has the following name:
 
-The apps have the following names:
-- `appvisomaster.py` : the original app
+- `appvisomaster.py`
 
 To start just open a terminal, change to the repository directory, enable the virtual environment and start the app. The `--inbrowser` option will automatically open a browser with the UI.
 
-task         | Mac                         | Windows                   | Linux
----          | ---                         | ---                       | ---
-activate venv|`. ./.env_mac/bin/activate`  |`.env_win\Scripts\activate`|`. ./.env_lin/bin/activate`
+task         |  Windows                   | Linux
+---          |  ---                       | ---
+activate venv| `.env_win\Scripts\activate`|`. ./.env_lin/bin/activate`
 
 
 for example (CrossOS)
 ```
-python appvisomaster.py --inbrowser
+python appvisomaster.py
 ```
 
 A browser should pop up with the UI
@@ -307,16 +278,7 @@ To stop the app press `ctrl-c` on the console (CrossOS)
 
 # Benchmark
 
-This benchmark compared the speed you can expect from the different configurations. The values themselves are not important as they depend on your GPU but you can see the difference it make to use one or other configuration. Measured in it/s (higher is better). Tested on: 
-- Mac M1 16GB
-- Win/Lin: 12Core CPU,  64GB
-
-model             | Mac | Win   | Lin
----               | --- | ---   | ---
-Transformer-TC-on | 8   | 21    | 27
-Transformer-TC-off| 11  | 44    | 125
-Hybrid            | n.a.| 98    | 130
-
+not done as the app runs fast on pretty much anything.
 
 # Known Issues
 Documentation of Issues i encountered and know of.
@@ -347,6 +309,8 @@ https://github.com/visomaster/VisoMaster
 There you can find the original authors
 
 ## Disclaimer: ##
+
+(From original authors)
 
 **VisoMaster** is a hobby project that we are making available to the community as a thank you to all of the contributors ahead of us.
 We've copied the disclaimer from [Swap-Mukham](https://github.com/harisreedhar/Swap-Mukham) here since it is well-written and applies 100% to this repo.
