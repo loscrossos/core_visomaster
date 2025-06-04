@@ -6,6 +6,19 @@ from tqdm import tqdm
 
 from app.helpers.integrity_checker import check_file_integrity
 
+
+
+def ensure_directory_exists(path):
+    # If it's a file path, get its directory
+    dir_path = path if os.path.isdir(path) else os.path.dirname(path)
+
+    if dir_path and not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+        print(f"Created directory: {dir_path}")
+    else:
+        print(f"Directory already exists: {dir_path}")
+
+
 def download_file(model_name: str, file_path: str, correct_hash: str, url: str) -> bool:
     """
     Downloads a file and verifies its integrity.
@@ -20,6 +33,9 @@ def download_file(model_name: str, file_path: str, correct_hash: str, url: str) 
     - bool: True if the file is downloaded and verified successfully, False otherwise.
     """
     # Remove the file if it already exists and restart download
+    
+    ensure_directory_exists(file_path)
+    
     if Path(file_path).is_file():
         if check_file_integrity(file_path, correct_hash):
             print(f"\nSkipping {model_name} as it is already downloaded!")
