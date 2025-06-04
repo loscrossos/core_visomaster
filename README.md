@@ -76,7 +76,7 @@ pip install -r requirements.txt
 You can use one of these optional steps (detailed steps below):
 - **Option 1**: automatic model download: just go to the next step and start the app!
 - **Option 2**: reuse your models without changing their paths: run  `python appvisomaster.py --checkmodels` after install to generate `configmodels.txt` and edit the paths within the file. run the command again to verify it worked.
-
+- **Option 3**: force model integrity check and downlaod missing: run `python appvisomaster.py --integritycheck`
 **Run the app**
 
 
@@ -173,7 +173,7 @@ cd core_visomaster
 
 task       |  Windows                   | Linux
 ---        |  ---                       | ---
-create venv|`py -3.12 -m venv .env_win`|`python3.12 -m venv .env_lin`
+create venv|`py -3.10 -m venv .env_win`|`python3.10 -m venv .env_lin`
 activate it|`.env_win\Scripts\activate`|`. ./.env_lin/bin/activate`
 
 At this point you should see at the left of your prompt the name of your environment (e.g. `(.env_win)`)
@@ -196,6 +196,7 @@ At this point you *could* just start the apps and start generating away... but i
 The needed models are about 6GB in total. You can get them in 3 ways:
 - **Automatic Download** as huggingface cache (easiest way)
 - **Re-use existing models**: hf_download or manual
+- **Integrity check**: The app self checks its models and repairs broken models.
 
 to see the status of the model recognition start any app with the parameter `--checkmodels`
 
@@ -220,13 +221,9 @@ You can use absolute or relative paths. If you have a multiboot-Setup (e.g. dual
 
 There are 2 types of model downloads: the hugginface (hf) cache and manual model download.
 
-**Re-Use existing model files**
+### Integrity check
 
-If you used the app before you should have a folder called `hf_download` or `hf_cache` in your app folder. You can do one of these:
-
-- move that folder to the `core_visomaster/models` folder and it will be used automatically OR
-- replace the set path with the one of the existing folder in the line with `HF_HOME`. Make sure that the line points only to the single 'hf_download' folder. The app will crawl the sub-directories on its own. You dont need to change any other lines as these will be ignored.
-
+If you think some models are damaged you can force a model integrity check and download missing by running: `python appvisomaster.py --integritycheck`
 
 
 **Checking that the models are correctly configured**

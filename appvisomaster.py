@@ -339,6 +339,7 @@ parser.add_argument("--port", type=int, required=False)
 parser.add_argument("--inbrowser", action='store_true')
 parser.add_argument("--output_dir", type=str, default='./outputs')
 parser.add_argument("--checkmodels", action='store_true')
+parser.add_argument("--integritycheck", action='store_true')
 args = parser.parse_args()
 ###################################
 # for win desktop probably use --server 127.0.0.1 --inbrowser
@@ -368,10 +369,9 @@ if debug_mode:
 
 
 #download models if this is missing:
-if not check_do_all_files_exist(in_dotenv_needed_models,out_dotenv_loaded_paths, out_dotenv_loaded_models, out_dotenv_loaded_models_values, in_files_to_check_in_paths , silent =True):
-    print("Needed model missing. Triggering automatic model download....")
+if not check_do_all_files_exist(in_dotenv_needed_models,out_dotenv_loaded_paths, out_dotenv_loaded_models, out_dotenv_loaded_models_values, in_files_to_check_in_paths , silent =True) or args.integritycheck:
+    print("Needed model integrity check: Triggering automatic model integrity check and download....")
 
-    
     from app.helpers.downloader import download_file
     from app.processors.models_data import models_list, extra_lib_list
     for model_data in models_list:
@@ -383,8 +383,6 @@ if not check_do_all_files_exist(in_dotenv_needed_models,out_dotenv_loaded_paths,
     print ("Downlad finished. Restart app!")
     sys.exit()
  
-
-
 
 #export QT_QPA_PLATFORM=xcb
 from typing_extensions import Self
