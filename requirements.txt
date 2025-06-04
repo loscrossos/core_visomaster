@@ -1,0 +1,35 @@
+#core Visomaster
+
+#PYTORCH*********************************************************************
+--extra-index-url=https://download.pytorch.org/whl/nightly/cpu ; sys_platform  == 'darwin'
+--extra-index-url=https://download.pytorch.org/whl/cu128 ; sys_platform  != 'darwin'
+torch==2.7.0
+torchvision
+torchaudio
+
+numpy==1.26.4
+opencv-python==4.10.0.84
+scikit-image==0.21.0
+pillow==9.5.0
+onnx==1.16.1
+protobuf==4.23.2
+psutil==6.0.0
+onnxruntime-gpu==1.19.0 
+packaging==24.1
+PySide6==6.9.0
+kornia
+tensorrt==10.6.0 --extra-index-url https://pypi.nvidia.com
+tensorrt-cu12_libs==10.6.0
+tensorrt-cu12_bindings==10.6.0
+tqdm
+typing_extensions==4.14.0
+ftfy
+regex
+pyvirtualcam==0.11.1
+numexpr
+onnxsim
+requests
+pyqt-toast-notification==1.3.2
+qdarkstyle
+pyqtdarktheme
+
