@@ -28,6 +28,7 @@
 - core Visomaster extra features:
   - Works on Windows and Linux.
   - Full support for all CUDA cards (yes, RTX 50 series Blackwell too)
+  - Automatic model download and model self-repair (redownloads damaged files)
   - Configurable Model placement: retrieves the models from anywhere you stored them.
   - efficient unified Cross-OS install
 
