@@ -296,7 +296,10 @@ Documentation of Issues i encountered and know of.
 - For missing models, double-check that all models are placed in the correct directories.
 
 
-
+- if you have problems getting the softwar to run and you open an issue it is mandatory to include the output of 
+```
+python appvisomaster.py --sysreport
+```
 
 ## Credits
 

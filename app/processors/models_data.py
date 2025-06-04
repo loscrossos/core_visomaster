@@ -551,7 +551,7 @@ if args.checkmodels:
 if args.sysreport: 
     full_report=generate_troubleshooting_report(in_model_config_file=in_model_config_file)
     print(full_report)
-
+    sys.exit()
 
 if debug_mode:
     print("---current model paths---------")
