@@ -1,5 +1,4 @@
-
-# VisoMaster 
+# core VisoMaster 
 ### VisoMaster is a powerful yet easy-to-use tool for face swapping and editing in images and videos. It utilizes AI to produce natural-looking results with minimal effort, making it ideal for both casual users and professionals.  
 
 ---
@@ -7,113 +6,348 @@
 
 ## Features  
 
-### 🔄 **Face Swap**  
-- Supports multiple face swapper models  
-- Compatible with DeepFaceLab trained models (DFM)  
-- Advanced multi-face swapping with masking options for each facial part  
-- Occlusion masking support (DFL XSeg Masking)  
-- Works with all popular face detectors & landmark detectors  
-- Expression Restorer: Transfers original expressions to the swapped face  
-- Face Restoration: Supports all popular upscaling & enhancement models  
+- **Face Swap**
+  - Supports multiple face swapper models  
+  - Compatible with DeepFaceLab trained models (DFM)  
+  - Advanced multi-face swapping with masking options for each facial part  
+  - Occlusion masking support (DFL XSeg Masking)  
+  - Works with all popular face detectors & landmark detectors  
+  - Expression Restorer: Transfers original expressions to the swapped face  
+  - Face Restoration: Supports all popular upscaling & enhancement models  
+- **Face Editor (LivePortrait Models)**  
+  - Manually adjust expressions and poses for different face parts  
+  - Fine-tune colors for Face, Hair, Eyebrows, and Lips using RGB adjustments  
+- **Other Powerful Features**  
+  - **Live Playback**: See processed video in real-time before saving  
+  - **Face Embeddings**: Use multiple source faces for better accuracy & similarity  
+  - **Live Swapping via Webcam**: Stream to virtual camera for Twitch, YouTube, Zoom, etc.  
+  - **User-Friendly Interface**: Intuitive and easy to use  
+  - **Video Markers**: Adjust settings per frame for precise results  
+  - **TensorRT Support**: Leverages supported GPUs for ultra-fast processing  
+  - **Many More Advanced Features** 
 
-### 🎭 **Face Editor (LivePortrait Models)**  
-- Manually adjust expressions and poses for different face parts  
-- Fine-tune colors for Face, Hair, Eyebrows, and Lips using RGB adjustments  
+- core Visomaster extra features:
+  - Works on Windows and Linux.
+  - Full support for all CUDA cards (yes, RTX 50 series Blackwell too)
+  - Configurable Model placement: retrieves the models from anywhere you stored them.
+  - efficient unified Cross-OS install
 
-### 🚀 **Other Powerful Features**  
-- **Live Playback**: See processed video in real-time before saving  
-- **Face Embeddings**: Use multiple source faces for better accuracy & similarity  
-- **Live Swapping via Webcam**: Stream to virtual camera for Twitch, YouTube, Zoom, etc.  
-- **User-Friendly Interface**: Intuitive and easy to use  
-- **Video Markers**: Adjust settings per frame for precise results  
-- **TensorRT Support**: Leverages supported GPUs for ultra-fast processing  
-- **Many More Advanced Features** 🎉  
 
-## Automatic Installation (Windows)
-- For Windows users with an Nvidia GPU, we provide an automatic installer for easy set up. 
-- You can get the installer from the [releases](https://github.com/visomaster/VisoMaster/releases/tag/v0.1.1) page or from this [link](https://github.com/visomaster/VisoMaster/releases/download/v0.1.1/VisoMaster_Setup.exe).
-- Choose the correct CUDA version inside the installer based on your GPU Compatibility.
-- After successful installation, go to your installed directory and run the **Start_Portable.bat** file to launch **VisoMaster**
+# Installation 
 
-## **Manual Installation Guide (Nvidia)**
+ 
+The installation in general consists of:
 
-Follow the steps below to install and run **VisoMaster** on your system.
+- Pre-Requisites: Check that your system can actually run the model
+- Project Installation. It consists of 
+    - cloning the repository
+    - creating a virtual environment
+    - installing the requirements
+    - optionally: re-using existing models
+    - starting the app.
 
-## **Prerequisites**
-Before proceeding, ensure you have the following installed on your system:
-- **Git** ([Download](https://git-scm.com/downloads))
-- **Miniconda** ([Download](https://www.anaconda.com/download))
+
+## TLDR Installation
+
+- You need ffmpeg installed before using the app
+
+**Windows**
+```
+git clone https://github.com/loscrossos/core_visomaster
+cd core_visomaster
+
+py -3.10 -m venv .env_win
+.env_win\Scripts\activate
+
+pip install -r requirements.txt
+```
+
+**Linux**
+```
+git clone https://github.com/loscrossos/core_visomaster
+cd core_visomaster
+
+python3.10 -m venv .env_lin
+. ./.env_lin/bin/activate
+
+pip install -r requirements.txt
+```
+
+**All OSes**
+You can use one of these optional steps (detailed steps below):
+- **Option 1**: automatic model download: just go to the next step and start the app!
+
+- **Option 2**: Manual triggered Model Donwload: enter the `models` dir and use the `maclin_get_models.sh` or `win_get_models.bat`
+- **Option 3**: reuse your models without changing their paths: run  `python appvisomaster.py --checkmodels` after install to generate `configmodels.txt` and edit the paths within the file. run the command again to verify it worked.
+
+**Run the app**
+
+
+Whenever you want to start the apps open a console in the repository directory, activate your virtual environment:
+
+```
+MacOS:
+. ./.env_mac/bin/activate
+Windows:
+.env_win\Scripts\activate
+Linux:
+. ./.env_lin/bin/activate
+```
+
+
+start the web-app with:
+
+`python appvisomaster.py --inbrowser`
+
+
+Stop the app pressing `ctrl + c` on the console
+
+
+
+
+## Pre-Requisites
+
+In general you should have your PC setup for AI development when trying out AI models, LLMs and the likes. If you have some experience in this area, you likely already fulfill most if not all of these items. visomaster has however light requirements on the hardware.
+
+
+### Hardware requirements
+
+
+
+**Installation requirements**
+
+This seem the minimum hardware requirements:
+
+
+Hardware    | **Mac** | **Win/Lin**
+---         | ---     | ---
+CPU         | n.a.    | Will not be used much. So any modern CPU should do
+VRAM        | n.a.    | Uses 4GB VRAM during generation
+RAM         | n.a.    | Uses some 5GB RAM (peak) during generation
+Disk Space  | n.a.    | 6GB for the models
+
+
+
+
+
+
+### Software requirements
+
+**Requirements**
+
+You should have the following setup to run this project:
+
+- Python 3.10
+- latest GPU drivers
+- latest cuda-toolkit 12.8+ (for nvidia 50 series support)
+- Ffmpeg installed and configured
+- Linux:
+    - jpg headers:
+      - install with:   sudo apt install libjpeg-dev zlib1g-dev
+
+I am not using Conda but the original Free Open Source Python. This guide assumes you use that.
+
+**Automated Software development setup**
+
+If you want an automated, beginner friendly but efficient way to setup a software development environment for AI and Python, you can use my other project: CrossOS_Setup, which setups your Mac, Windows or Linux PC automatically to a full fledged AI Software Development station. It includes a system checker to assess how well installed your current setup is, before you install anything:
+
+https://github.com/loscrossos/crossos_setup
+
+Thats what i use for all my development across all my systems. Its also fully free and open source. No strings attached!
+
+
+
+## Project Installation
+
+If you setup your development environment using my `Crossos_Setup` project, you can do this from a normal non-admin account (which you should actually be doing for your own security).
+
+Hint: "CrossOS" means the commands are valid on MacWinLin
+
+ ---
+
+Lets install core_visomaster in 5 Lines on all OSes, shall we? Just open a terminal and enter the commands.
+
+
+
+1. Clone the repo (CrossOS): 
+```
+git clone https://github.com/loscrossos/core_visomaster
+cd core_visomaster
+```
+
+2. Create and activate a python virtual environment  
+
+task       | Mac                         | Windows                   | Linux
+---        | ---                         | ---                       | ---
+create venv|`python3.12 -m venv .env_mac`|`py -3.12 -m venv .env_win`|`python3.12 -m venv .env_lin`
+activate it|`. ./.env_mac/bin/activate`  |`.env_win\Scripts\activate`|`. ./.env_lin/bin/activate`
+
+At this point you should see at the left of your prompt the name of your environment (e.g. `(.env_mac)`)
+
+
+3. Install the libraries (CrossOS):
+```
+pip install -r requirements.txt
+```
+
+Thats it.
 
 ---
 
-## **Installation Steps**
+At this point you *could* just start the apps and start generating away... but it would first automatically download the models (6GB of them). If you dont have the models yet thats ok. But if you have already downloaded them OR if you have a dual/trial/multiboot machine and want to make them portable, read on...
 
-### **1. Clone the Repository**  
-Open a terminal or command prompt and run:  
-```sh
-git clone https://github.com/visomaster/VisoMaster.git
+
+## Model Installation
+
+The needed models are about 6GB in total. You can get them in 3 ways:
+- **Automatic Download** as huggingface cache (easiest way)
+- **Manually triggered model download** (reccomended way. second easiest)
+- **Re-use existing models**: hf_download or manual
+
+to see the status of the model recognition start any app with the parameter `--checkmodels`
+
+e.g. `python appstudio.py --checkmodels`
+The app will report the models it sees and quit without downloading or loading anything.
+
+
+### Automatic download
+just start the app. 
+
+Missing models will be downloaded. This is for when you never had the app installed before. The models will be downloaded to a huggingface-type folder in the "models" directory. This is ok if you want the most easy solution and dont care about portability (which is ok!). This is not reccomended as its not very reusable for software developers: e.g. if you want to do coding against the models from another project or want to store the models later. This supports multi-boot.
+
+### Manually triggered automatic download
+
+
+This is the CrossOS reccomended way. change to the the "models" directory (`cd models`) and start the downloader file:
+
+task     | Mac Linux              | Windows   
+---      | ---                    | ---       
+manual dl|`./maclin_get_models.sh`|`win_get_models.bat`
+
+
+Models will be downloaded from hugging face. This will take some time as its 6GB of models. let it work.
+
+
+### Re-use existing models
+
+
+You can re-use your existing models by configuring the path in the configuration file `modelconfig.txt`.
+This file is created when you first start any app. Just call e.g. `python appstudio.py --checkmodels` to create it.
+Now open it with any text editor and put in the path of the directory that points to your models. 
+You can use absolute or relative paths. If you have a multiboot-Setup (e.g. dualboot Windows/Linux) you should use relative paths with forward slashes e.g. `../mydir/example`
+
+There are 2 types of model downloads: the hugginface (hf) cache and manual model download.
+
+**Re-Use existing model files**
+
+If you used the app before you should have a folder called `hf_download` or `hf_cache` in your app folder. You can do one of these:
+
+- move that folder to the `core_visomaster/models` folder and it will be used automatically OR
+- replace the set path with the one of the existing folder in the line with `HF_HOME`. Make sure that the line points only to the single 'hf_download' folder. The app will crawl the sub-directories on its own. You dont need to change any other lines as these will be ignored.
+
+
+
+
+**Re-Use manually downloaded models**
+
+If you downloaded the single models directly from huggingface (git cloning them) you can enter the path of each directory in the single lines of the config file.
+You dont need to set the `HF_HOME` line as it will be ignored if the other paths are set correctly.
+
+
+**Checking that the models are correctly configured**
+
+You can easily check that the app sees the models by starting any of the demos with the parameter `--checkmodels` and checking the last line.
+
+e.g. `python appstudio.py --checkmodels`
+
 ```
-```sh
-cd VisoMaster
+[!FOUND!]: /Users/Shared/github/core_projectexample/models/somemodel/
+[!FOUND!]: /Users/Shared/github/core_projectexample/models/someothermodel/
+[!FOUND!]: /Users/Shared/github/core_projectexample/models/modeltoo/
+----------------------------
+FINAL RESULT: It seems all model directories were found. Nothing will be downloaded!
 ```
 
-### **2. Create and Activate a Conda Environment**  
-```sh
-conda create -n visomaster python=3.10.13 -y
+# Usage 
+
+You can use app as you always have. Just start the app and be creative!
+
+## Starting the Apps
+
+- Torch Compile is disabled by default on Windows: To run with torch compile enabled on windows you must do one of these. then you can enable the option in the gradio app or the `configmodel.txt`, else the app will crash when it does not find the C++ compiler ("cl.exe"):
+    - run the app in a MSVC developer console (x64 mode)
+    - Open a normal console and run this before starting the app:
+        - `"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" x64`
+
+
+The apps have the following names:
+- `appvisomaster.py` : the original app
+
+To start just open a terminal, change to the repository directory, enable the virtual environment and start the app. The `--inbrowser` option will automatically open a browser with the UI.
+
+task         | Mac                         | Windows                   | Linux
+---          | ---                         | ---                       | ---
+activate venv|`. ./.env_mac/bin/activate`  |`.env_win\Scripts\activate`|`. ./.env_lin/bin/activate`
+
+
+for example (CrossOS)
 ```
-```sh
-conda activate visomaster
+python appvisomaster.py --inbrowser
 ```
 
-### **3. Install CUDA and cuDNN**  
-```sh
-conda install -c nvidia/label/cuda-12.4.1 cuda-runtime
-```
-```sh
-conda install -c conda-forge cudnn
-```
+A browser should pop up with the UI
 
-### **4. Install Additional Dependencies**  
-```sh
-conda install scikit-image
-```
-```sh
-pip install -r requirements_cu124.txt
-```
 
-### **5. Download Models and Other Dependencies**  
-1. Download all the required models
-```sh
-python download_models.py
-```
-2. Download all the files from this [page](https://github.com/visomaster/visomaster-assets/releases/tag/v0.1.0_dp) and copy it to the ***dependencies/*** folder.
+To stop the app press `ctrl-c` on the console (CrossOS)
 
-  **Note**: You do not need to download the Source code (zip) and Source code (tar.gz) files 
-### **6. Run the Application**  
-Once everything is set up, start the application by opening the **Start.bat** file.
-On Linux just run `python main.py`.
----
+
+
+
+
+
+# Benchmark
+
+This benchmark compared the speed you can expect from the different configurations. The values themselves are not important as they depend on your GPU but you can see the difference it make to use one or other configuration. Measured in it/s (higher is better). Tested on: 
+- Mac M1 16GB
+- Win/Lin: 12Core CPU,  64GB
+
+model             | Mac | Win   | Lin
+---               | --- | ---   | ---
+Transformer-TC-on | 8   | 21    | 27
+Transformer-TC-off| 11  | 44    | 125
+Hybrid            | n.a.| 98    | 130
+
+
+# Known Issues
+Documentation of Issues i encountered and know of.
+
+ 
+
+
+
+
+
+
+
+
 
 ## **Troubleshooting**
 - If you face CUDA-related issues, ensure your GPU drivers are up to date.
 - For missing models, double-check that all models are placed in the correct directories.
 
-## [Join Discord](https://discord.gg/5rx4SQuDbp)
 
-## Support The Project ##
-This project was made possible by the combined efforts of **[@argenspin](https://github.com/argenspin)** and **[@Alucard24](https://github.com/alucard24)** with the support of countless other members in our Discord community. If you wish to support us for the continued development of **Visomaster**, you can donate to either of us (or Both if you're double Awesome :smiley: )
 
-### **argenspin** ###
-- [BuyMeACoffee](https://buymeacoffee.com/argenspin)
-- BTC: bc1qe8y7z0lkjsw6ssnlyzsncw0f4swjgh58j9vrqm84gw2nscgvvs5s4fts8g
-- ETH: 0x967a442FBd13617DE8d5fDC75234b2052122156B
-### **Alucard24** ###
-- [BuyMeACoffee](https://buymeacoffee.com/alucard_24)
-- [PayPal](https://www.paypal.com/donate/?business=XJX2E5ZTMZUSQ&no_recurring=0&item_name=Support+us+with+a+donation!+Your+contribution+helps+us+continue+improving+and+providing+quality+content.+Thank+you!&currency_code=EUR)
-- BTC: 15ny8vV3ChYsEuDta6VG3aKdT6Ra7duRAc
 
+## Credits
+
+The original project can be found at:
+
+https://github.com/visomaster/VisoMaster
+
+There you can find the original authors
 
 ## Disclaimer: ##
+
 **VisoMaster** is a hobby project that we are making available to the community as a thank you to all of the contributors ahead of us.
 We've copied the disclaimer from [Swap-Mukham](https://github.com/harisreedhar/Swap-Mukham) here since it is well-written and applies 100% to this repo.
  

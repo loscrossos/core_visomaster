@@ -10,9 +10,15 @@ in_dotenv_needed_paths = {
 
 in_dotenv_needed_params = {
     "DEBUG_MODE": False,
+   
 }
 
 
+import os
+in_files_to_check_in_paths={
+    
+    "MODELS_HOME": f"{os.sep}BSRGANx4.fp16.onnx"
+}
 
 #LCX1.01##################################################################
 #FILELOADER##############################################################
@@ -187,7 +193,7 @@ def get_hf_model_cache_dirname(model_id: str) -> str:
     return base + model_id.replace('/', '--')
 
 
-def lcx_checkmodels(dotenv_needed_models,dotenv_loaded_paths, dotenv_loaded_models, dotenv_loaded_models_values  ):
+def lcx_checkmodels(dotenv_needed_models,dotenv_loaded_paths, dotenv_loaded_models, dotenv_loaded_models_values, in_files_to_check_in_paths=None  ):
     #TODO: load dynamically from array
     test_models_hf = []
     test_models_dir=[]
@@ -226,6 +232,14 @@ def lcx_checkmodels(dotenv_needed_models,dotenv_loaded_paths, dotenv_loaded_mode
     for line in path_details_path:
         print(line)
 
+    for file_to_check in in_files_to_check_in_paths:
+        if dotenv_loaded_paths:            
+            concrete_file_to_check=f"{dotenv_loaded_paths[file_to_check]}{os.sep}{in_files_to_check_in_paths[file_to_check]}"
+            path=Path(concrete_file_to_check)
+            if path.exists():
+                print(f"[!FOUND!]: {concrete_file_to_check}")
+            else:
+                print(f"[!MISSING!]: {concrete_file_to_check}")
 
     print("")
     #we show the dir values to the user
@@ -299,7 +313,7 @@ args = parser.parse_args()
 #return out_dotenv_loaded_models, out_dotenv_loaded_paths, out_dotenv_loaded_params 
 
 if args.checkmodels: 
-    lcx_checkmodels(in_dotenv_needed_models,out_dotenv_loaded_paths, out_dotenv_loaded_models, out_dotenv_loaded_models_values )
+    lcx_checkmodels(in_dotenv_needed_models,out_dotenv_loaded_paths, out_dotenv_loaded_models, out_dotenv_loaded_models_values, in_files_to_check_in_paths )
 
 
 if debug_mode:
@@ -319,11 +333,15 @@ if debug_mode:
 
 
 
-
-
-
-
-
+#download models if this is missing:
+if not os.path.exists(f"{out_dotenv_loaded_paths['MODELS_HOME']}{os.sep}BSRGANx4.fp16.onnx"):
+    print("Needed model missing. Triggering automatic model download....")
+    from app.helpers.downloader import download_file
+    from app.processors.models_data import models_list
+    for model_data in models_list:
+        download_file(model_data['model_name'], model_data['local_path'], model_data['hash'], model_data['url'])
+    
+ 
 
 
 
