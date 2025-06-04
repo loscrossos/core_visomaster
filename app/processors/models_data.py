@@ -387,6 +387,52 @@ landmark_model_mapping = {
     '478': 'FaceLandmark478',
 }
 
+ 
+
+
+
+extra_lib_list=[
+    {
+        "model_name": "lip_array.pkl",
+        "local_path": f"{models_dir}/liveportrait_onnx/lip_array.pkl",
+        "hash": "2d61aab1cc37a2741f4774fe9963b2db2566e063f798b1d28d791dd119352738",
+        "url": "https://github.com/visomaster/VisoMaster/raw/refs/heads/main/model_assets/liveportrait_onnx/lip_array.pkl"
+    },
+
+    {
+        "model_name": "bpe_simple_vocab_16e6.txt.gz",
+        "local_path": f"{models_dir}/bpe_simple_vocab_16e6.txt.gz",
+        "hash": "924691ac288e54409236115652ad4aa250f48203de50a9e4722a6ecd48d6804a",
+        "url": "https://github.com/visomaster/VisoMaster/raw/refs/heads/main/app/processors/external/cliplib/bpe_simple_vocab_16e6.txt.gz"
+    },
+    {
+        "model_name": "grid_sample_3d_plugin.dll",
+        "local_path": f"{models_dir}/grid_sample_3d_plugin.dll",
+        "hash": "28c0d1ca7f4442fcd8c546c7ad6d4b9f6366dd7f265dc45227a3ea399dfa48b4",
+        "url": "https://github.com/visomaster/VisoMaster/raw/refs/heads/main/model_assets/grid_sample_3d_plugin.dll"
+    },
+    {
+        "model_name": "libgrid_sample_3d_plugin.so",
+        "local_path": f"{models_dir}/libgrid_sample_3d_plugin.so",
+        "hash": "bd48c852366ba6ad5ba246239306d1a4be2aff709b35c0744ef68b84b718c6b5",
+        "url": "https://github.com/visomaster/VisoMaster/raw/refs/heads/main/model_assets/libgrid_sample_3d_plugin.so"
+    },
+    {
+        "model_name": "meanshape_68.pkl",
+        "local_path": f"{models_dir}/meanshape_68.pkl",
+        "hash": "39ffecf84ba73f0d0d7e49380833ba88713c9fcdec51df4f7ac45a48b8f4cc51",
+        "url": "https://github.com/visomaster/VisoMaster/raw/refs/heads/main/model_assets/meanshape_68.pkl"
+    },
+    {
+        "model_name": "media_rc.py",
+        "local_path": f"{models_dir}/media_rc.py",
+        "hash": "10ea891e2414bfb8d08a910fdf71d73e40b2d5c0113e8fcc62ee82f10b1167b2",
+        "url": "https://github.com/visomaster/VisoMaster/raw/refs/heads/main/app/ui/core/media_rc.py"
+    },   
+]
+
+
+
 
 
 models_list = [
