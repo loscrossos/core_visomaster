@@ -319,24 +319,19 @@ import shutil
 import torch
 import psutil
 from datetime import datetime
-
 def generate_troubleshooting_report(in_model_config_file=None):
-    """Generate a comprehensive troubleshooting report for AI/LLM deployment issues."""
-    
+    """Generate a comprehensive troubleshooting report for AI/LLM deployment issues."""   
     # Create a divider for better readability
     divider = "=" * 80
-    
     # Initialize report
     report = []
     report.append(f"{divider}")
     report.append(f"TROUBLESHOOTING REPORT - Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     #report.append(f"{divider}\n")
-    
     # 1. Hardware Information
     #report.append(f"{divider}")
     report.append("HARDWARE INFORMATION")
     #report.append(f"{divider}")
-    
     # CPU Info
     report.append("\nCPU:")
     report.append(f"  Model: {platform.processor()}")
@@ -346,12 +341,10 @@ def generate_troubleshooting_report(in_model_config_file=None):
         report.append(f"  Cores: Physical: {psutil.cpu_count(logical=False)}, Logical: {psutil.cpu_count(logical=True)}")
     except Exception as e:
         report.append(f"  Could not get CPU frequency info: {str(e)}")
-    
     # RAM Info
     ram = psutil.virtual_memory()
     report.append("\nRAM:")
     report.append(f"  Total: {ram.total / (1024**3):.2f} GB: free: {ram.available / (1024**3):.2f} used: {ram.used / (1024**3):.2f} GB")
-     
     # GPU Info (try with nvidia-smi first, then fallback to torch if available)
     report.append("\nGPU:")
     try:
@@ -362,7 +355,6 @@ def generate_troubleshooting_report(in_model_config_file=None):
                 gpu_name, vram_total = gpu_info.split(',')
                 report.append(f"  Model: {gpu_name.strip()}")
                 report.append(f"  VRAM: {vram_total.strip()}")
-                
                 # Get current VRAM usage if possible
                 try:
                     gpu_usage = subprocess.check_output([nvidia_smi, "--query-gpu=memory.used", "--format=csv,noheader"], encoding='utf-8').strip()
@@ -373,7 +365,6 @@ def generate_troubleshooting_report(in_model_config_file=None):
                 report.append(f"  Could not query GPU info with nvidia-smi: {str(e)}")
     except:
         pass
-    
     # If torch is available and has CUDA, get GPU info from torch
     try:
         if torch.cuda.is_available():
@@ -382,7 +373,6 @@ def generate_troubleshooting_report(in_model_config_file=None):
                 report.append(f"  Device {i}: {torch.cuda.get_device_name(i)}, VRAM: {torch.cuda.get_device_properties(i).total_memory / (1024**3):.2f} GB")
     except:
         pass
-    
     # Disk Space
     report.append("\nDISK:")
     try:
@@ -390,25 +380,21 @@ def generate_troubleshooting_report(in_model_config_file=None):
         report.append(f"  Total: {disk.total / (1024**3):.2f} GB.  Free: {disk.free / (1024**3):.2f} GB, Used: {disk.used / (1024**3):.2f} GB")
     except Exception as e:
         report.append(f"  Could not get disk info: {str(e)}")
-    
     # 2. Software Information
     report.append(f"\n{divider}")
     report.append("SOFTWARE INFORMATION")
     #report.append(f"{divider}")
-    
     # OS Info
     report.append("\nOPERATING SYSTEM:")
     report.append(f"  System: {platform.system()}")
     report.append(f"  Release: {platform.release()}")
     report.append(f"  Version: {platform.version()}")
     report.append(f"  Machine: {platform.machine()}")
-    
     # Python Info
     report.append("\nPYTHON:")
     report.append(f"  Version: {platform.python_version()}")
     report.append(f"  Implementation: {platform.python_implementation()}")
     report.append(f"  Executable: {sys.executable}")
-    
     # Installed packages
     report.append("\nINSTALLED PACKAGES (pip freeze):")
     try:
@@ -416,7 +402,6 @@ def generate_troubleshooting_report(in_model_config_file=None):
         report.append(pip_freeze)
     except Exception as e:
         report.append(f"  Could not get pip freeze output: {str(e)}")
-    
     # CUDA Info
     report.append("CUDA INFORMATION:")
     try:
@@ -430,7 +415,6 @@ def generate_troubleshooting_report(in_model_config_file=None):
             report.append("NVCC not found in PATH")
     except Exception as e:
         report.append(f"  Could not get NVCC version: {str(e)}")
-    
     # PyTorch CUDA version if available
     try:
         if 'torch' in sys.modules:
@@ -443,13 +427,11 @@ def generate_troubleshooting_report(in_model_config_file=None):
                 report.append(f"  Device name: {torch.cuda.get_device_name(0)}")
     except Exception as e:
         report.append(f"  Could not get PyTorch CUDA info: {str(e)}")
-    
     # 3. Model Configuration
     if in_model_config_file:
         report.append(f"\n{divider}")
         report.append("MODEL CONFIGURATION")
         #report.append(f"{divider}")
-        
         try:
             # Read config file content
             with open(in_model_config_file, 'r') as f:
@@ -458,26 +440,21 @@ def generate_troubleshooting_report(in_model_config_file=None):
             report.append(config_content)
         except Exception as e:
             report.append(f"\nCould not read model config file {in_model_config_file}: {str(e)}")
-    
     # 4. Environment Variables
     report.append(f"\n{divider}")
     report.append("RELEVANT ENVIRONMENT VARIABLES")
     #report.append(f"{divider}")
-    
     relevant_env_vars = [
         'PATH', 'LD_LIBRARY_PATH', 'CUDA_HOME', 'CUDA_PATH',
         'PYTHONPATH', 'CONDA_PREFIX', 'VIRTUAL_ENV'
     ]
-    
     for var in relevant_env_vars:
         if var in os.environ:
             report.append(f"{var}: {os.environ[var]}")
-    
     # 5. Additional System Info
     report.append(f"\n{divider}")
     report.append("ADDITIONAL SYSTEM INFORMATION")
     #report.append(f"{divider}")
-    
     try:
         # Check if running in container
         report.append("\nContainer/Virtualization:")
@@ -489,7 +466,6 @@ def generate_troubleshooting_report(in_model_config_file=None):
                     report.append("  Running inside a Docker container")
                 elif 'kubepods' in f.read():
                     report.append("  Running inside a Kubernetes pod")
-        
         # Check virtualization
         try:
             virt = subprocess.check_output(['systemd-detect-virt'], encoding='utf-8').strip()
@@ -499,32 +475,19 @@ def generate_troubleshooting_report(in_model_config_file=None):
             pass
     except Exception as e:
         report.append(f"  Could not check container/virtualization info: {str(e)}")
-    
     # Final divider
     #report.append(f"\n{divider}")
     report.append("END OF REPORT")
     report.append(f"{divider}")
-    
     # Join all report lines
     full_report = '\n'.join(report)
-    
-    # Print to terminal
-    
-    
     return full_report
 #END SYSREPORT###################################################################
 
-
-
-
 # Update the config file
 update_model_paths_file(in_dotenv_needed_models, in_dotenv_needed_paths, in_dotenv_needed_params, in_model_config_file)
-
 # Read back the values
 out_dotenv_loaded_models, out_dotenv_loaded_paths, out_dotenv_loaded_params , out_dotenv_loaded_models_values= parse_model_paths_file(in_model_config_file, in_dotenv_needed_models,in_dotenv_needed_paths)
-
-
-
 if debug_mode:
     print("Loaded models:", out_dotenv_loaded_models)
     print("Loaded models values:", out_dotenv_loaded_models_values)
@@ -535,7 +498,6 @@ if "HF_HOME" in in_dotenv_needed_paths:
     os.environ['HF_HOME'] = out_dotenv_loaded_paths["HF_HOME"]
 os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
 #os.environ["TOKENIZERS_PARALLELISM"] = "true"
-
 
 #originalblock#################################
 import argparse
