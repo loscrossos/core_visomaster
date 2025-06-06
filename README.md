@@ -116,9 +116,8 @@ you can watch step-by-step guides for your OS. This is the same information as t
 
 OS	    | Step-by-step install tutorial
 ---	    | ---
-Mac	    | todo
-Windows	| todo
-Linux  	| todo
+Windows	| https://youtu.be/qIAUOO9envQ
+Linux  	| https://youtu.be/0-c1wvunJYU
 
 
 
