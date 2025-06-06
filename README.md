@@ -1,5 +1,10 @@
-# core VisoMaster 
-### VisoMaster is a powerful yet easy-to-use tool for face swapping and editing in images and videos. It utilizes AI to produce natural-looking results with minimal effort, making it ideal for both casual users and professionals.  
+<div style="font-family:'Arial', sans-serif;font-size: 3em;font-weight: bold;background: linear-gradient(45deg, #FFD700, #FF8C00);-webkit-background-clip: text;background-clip: text;color: transparent;text-align: center;padding: 20px;text-shadow: 2px 2px 4px rgba(0,0,0,0.2);border-radius: 10px;"><span style="color: #333;">core</span><span style="background: linear-gradient(45deg, #AAAAAA, #FF45FF);-webkit-background-clip: text;background-clip: text;color: transparent;">VisoMaster</span></div>
+
+
+
+VisoMaster is a tool for face swapping and editing in images and videos. 
+
+This project does not aim at more functionality. *It hardens the core.*
 
 ---
 
