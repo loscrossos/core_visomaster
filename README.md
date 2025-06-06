@@ -244,7 +244,10 @@ If you think some models are damaged you can force a model integrity check and d
 
 **Checking that the models are correctly configured**
 
-You can easily check that the app sees the models by starting any of the demos with the parameter `--checkmodels` and checking the last line.
+
+You can easily check that the app sees the models by starting any of the demos with the parameter `--checkmodels` and checking the last line ofthe output.
+Even if some paths are missing thats ok as long as the last line says its ok.
+
 
 e.g. `python appstudio.py --checkmodels`
 
@@ -262,7 +265,7 @@ FINAL RESULT: It seems all model directories were found. Nothing will be downloa
 
 If you ever need to update the app
 - because you know that the repository changed
-- you filed a bug and it got fixed
+- a bug got fixed
 
 **update repository**
 
@@ -284,7 +287,7 @@ and recreating it using the steps above:
 
 
 
-
+Normally you dont need this. you would read it explicitely. So like in 99% of cases you will not be doing this. 
 
 
 
