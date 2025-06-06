@@ -25,7 +25,7 @@ in_files_to_check_in_paths=[
 ]
 
 
-#LCX1.03##################################################################
+#LCX1.05##################################################################
 #FILELOADER##############################################################
 #########################################################################
 debug_mode=False
@@ -36,6 +36,151 @@ in_model_config_file="configmodel.txt"
 PREFIX_MODEL="PATH_MODEL_"
 PREFIX_PATH="PATH_NEEDED_"
 LOG_PREFIX="CROSSOS_LOG"
+
+
+##Memhelper START#######################################
+import torch
+import shutil
+import subprocess
+
+cpu = torch.device('cpu')
+gpu = None
+if torch.cuda.is_available():
+    gpu = torch.device(f'cuda:{torch.cuda.current_device()}')
+elif torch.backends.mps.is_available():
+    gpu = torch.device('mps')
+else:
+    raise RuntimeError("No GPU device available. Please use a system with CUDA or MPS support.")
+#returns VRAM in GB.
+def get_free_system_vram_total_free_used(device=None, debug_mode=False):
+    total=0
+    used=0
+    free=0
+    if device is None:
+        device = gpu
+    if device.type == 'mps':
+        # MPS doesn't provide detailed memory stats, return a best guess
+        bytes_total_available = torch.mps.recommended_max_memory() - torch.mps.driver_allocated_memory()
+        free= torch.mps.recommended_max_memory()  / (1024 ** 3)
+        used= torch.mps.driver_allocated_memory()  / (1024 ** 3)
+        total= bytes_total_available / (1024 ** 3)
+    elif device.type == 'cuda':
+        num_devices = torch.cuda.device_count()
+        if debug_mode:
+            print(f"Found {num_devices} CUDA device(s)")
+
+        total_vram_all = 0.0
+        used_vram_all = 0.0
+        free_vram_all = 0.0
+
+        for i in range(num_devices):
+            torch.cuda.set_device(i)  # Switch to device `i`
+            device = torch.device(f'cuda:{i}')
+
+            # Get memory stats for the current device
+            memory_stats = torch.cuda.memory_stats(device)
+            bytes_active = memory_stats['active_bytes.all.current']
+            bytes_reserved = memory_stats['reserved_bytes.all.current']
+            bytes_free_cuda, bytes_total_cuda = torch.cuda.mem_get_info(device)
+
+            # Calculate memory components
+            bytes_inactive_reserved = bytes_reserved - bytes_active
+            bytes_total_available = bytes_free_cuda + bytes_inactive_reserved
+
+            # Convert to GB
+            loop_used = bytes_active / (1024 ** 3)
+            loop_free = bytes_total_available / (1024 ** 3)
+            loop_total = bytes_total_cuda / (1024 ** 3)
+
+            # Accumulate across all devices
+            total_vram_all += loop_total
+            used_vram_all += loop_used
+            free_vram_all += loop_free
+            if debug_mode:
+                # Print per-device stats
+                print(f"\nDevice {i} ({torch.cuda.get_device_name(i)}):")
+                print(f"  Total VRAM: {loop_total:.2f} GB")
+                print(f"  Used VRAM:  {loop_used:.2f} GB")
+                print(f"  Free VRAM:  {loop_free:.2f} GB")
+        if debug_mode:
+
+            # Print aggregated stats
+            print("\n=== Total Across All Devices ===")
+            print(f"Total VRAM: {total_vram_all:.2f} GB")
+            print(f"Used VRAM:  {used_vram_all:.2f} GB")
+            print(f"Free VRAM:  {free_vram_all:.2f} GB")
+        free = free_vram_all 
+        total = total_vram_all   # This is more accurate than used+free
+        used = total-free
+        """
+        try:
+            nvidia_smi = shutil.which('nvidia-smi')
+            if nvidia_smi:
+                try:
+                    gpu_info = subprocess.check_output([nvidia_smi, "--query-gpu=name,memory.total", "--format=csv,noheader,nounits"], encoding='utf-8').strip()
+                    gpu_name, vram_total = gpu_info.split(',')
+                    #report.append(f"  Model: {gpu_name.strip()}")
+                    total= float(vram_total.strip())/1000
+                    # Get current VRAM usage if possible
+                    try:
+                        gpu_usage = subprocess.check_output([nvidia_smi, "--query-gpu=memory.used", "--format=csv,noheader,nounits"], encoding='utf-8').strip()
+                        used=float(gpu_usage.strip())/1000
+                        free=total-used
+                    except:
+                        pass
+                except Exception as e:
+                    print(f"  Could not query GPU info with nvidia-smi: {str(e)}")
+        except:
+            pass
+        """
+    total=round(total, 2)
+    free=round(free, 2)
+    used=round(used, 2)
+    if debug_mode:
+        print(f"GPU mem total: {total}, free: {free}, used: {used}")
+    return total,free,used
+#total,free,used=get_free_system_vram_total_free_used()
+#print(f"GPU total: {total}, free: {free}, used: {used}")
+
+import psutil
+#returns VRAM in GB.
+def get_free_system_ram_total_free_used( debug_mode=False):
+    total=0
+    used=0
+    free=0
+    ram = psutil.virtual_memory()
+    total= round(ram.total / (1024**3), 2)
+    free=round(ram.available / (1024**3), 2)
+    used=round(ram.used / (1024**3), 2)
+    if debug_mode:
+        print(f"RAM total: {total}, free: {free}, used: {used}")
+    return total,free,used
+#total,free,used=get_free_system_ram_total_free_used()
+#print(f"RAM total: {total}, free: {free}, used: {used}")
+
+
+#returns VRAM in GB.
+import psutil
+def get_free_system_disk_total_free_used(device=None, debug_mode=False):
+    total=0
+    used=0
+    free=0
+    try:
+        disk = psutil.disk_usage('/')
+        total=round(disk.total / (1024**3), 2)
+        free= round(disk.free / (1024**3), 2)
+        used=round(disk.used / (1024**3), 2)
+    except Exception as e:
+        print(f"  Could not get disk info: {str(e)}")
+    if debug_mode:
+        print(f"disk mem total: {total}, free: {free}, used: {used}")
+    return total,free,used
+
+ 
+#total,free,used=get_free_system_disk_total_free_used()
+#print(f"HDD total: {total}, free: {free}, used: {used}")
+##Memhelper END#######################################
+
 import re
 import os 
 from pathlib import Path
@@ -302,14 +447,10 @@ def check_do_all_files_exist(dotenv_needed_models,dotenv_loaded_paths, dotenv_lo
     retval_final=retval_models_exist == True and retval_paths_exist ==True
 
     return retval_final
-        
 
 def lcx_checkmodels(dotenv_needed_models,dotenv_loaded_paths, dotenv_loaded_models, dotenv_loaded_models_values, in_files_to_check_in_paths=None  ):
     check_do_all_files_exist(dotenv_needed_models,dotenv_loaded_paths, dotenv_loaded_models, dotenv_loaded_models_values, in_files_to_check_in_paths=in_files_to_check_in_paths  )
-
     sys.exit()
-
-
 ### SYS REPORT START##################
 import sys
 import platform
@@ -319,19 +460,42 @@ import shutil
 import torch
 import psutil
 from datetime import datetime
+
+def anonymize_path(path):
+    """Replace username in paths with <USER>"""
+    if not path:
+        return path
+    # Handle both Unix and Windows paths
+    if path.startswith('/home/'):
+        parts = path.split('/')
+        if len(parts) > 2:
+            parts[2] = '<USER>'
+            return '/'.join(parts)
+    elif path.startswith('/Users/'):
+        parts = path.split('/')
+        if len(parts) > 2:
+            parts[2] = '<USER>'
+            return '/'.join(parts)
+    elif path.startswith('C:\\Users\\'):
+        parts = path.split('\\')
+        if len(parts) > 2:
+            parts[2] = '<USER>'
+            return '\\'.join(parts)
+    return path
+
 def generate_troubleshooting_report(in_model_config_file=None):
-    """Generate a comprehensive troubleshooting report for AI/LLM deployment issues."""   
+    """Generate a comprehensive troubleshooting report for AI/LLM deployment issues."""
     # Create a divider for better readability
     divider = "=" * 80
+    
     # Initialize report
     report = []
     report.append(f"{divider}")
     report.append(f"TROUBLESHOOTING REPORT - Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    #report.append(f"{divider}\n")
+    
     # 1. Hardware Information
-    #report.append(f"{divider}")
     report.append("HARDWARE INFORMATION")
-    #report.append(f"{divider}")
+    
     # CPU Info
     report.append("\nCPU:")
     report.append(f"  Model: {platform.processor()}")
@@ -341,11 +505,13 @@ def generate_troubleshooting_report(in_model_config_file=None):
         report.append(f"  Cores: Physical: {psutil.cpu_count(logical=False)}, Logical: {psutil.cpu_count(logical=True)}")
     except Exception as e:
         report.append(f"  Could not get CPU frequency info: {str(e)}")
+    
     # RAM Info
     ram = psutil.virtual_memory()
     report.append("\nRAM:")
     report.append(f"  Total: {ram.total / (1024**3):.2f} GB: free: {ram.available / (1024**3):.2f} used: {ram.used / (1024**3):.2f} GB")
-    # GPU Info (try with nvidia-smi first, then fallback to torch if available)
+     
+    # GPU Info
     report.append("\nGPU:")
     try:
         nvidia_smi = shutil.which('nvidia-smi')
@@ -355,7 +521,7 @@ def generate_troubleshooting_report(in_model_config_file=None):
                 gpu_name, vram_total = gpu_info.split(',')
                 report.append(f"  Model: {gpu_name.strip()}")
                 report.append(f"  VRAM: {vram_total.strip()}")
-                # Get current VRAM usage if possible
+                
                 try:
                     gpu_usage = subprocess.check_output([nvidia_smi, "--query-gpu=memory.used", "--format=csv,noheader"], encoding='utf-8').strip()
                     report.append(f"  VRAM Used: {gpu_usage.strip()}")
@@ -365,6 +531,7 @@ def generate_troubleshooting_report(in_model_config_file=None):
                 report.append(f"  Could not query GPU info with nvidia-smi: {str(e)}")
     except:
         pass
+    
     # If torch is available and has CUDA, get GPU info from torch
     try:
         if torch.cuda.is_available():
@@ -373,6 +540,7 @@ def generate_troubleshooting_report(in_model_config_file=None):
                 report.append(f"  Device {i}: {torch.cuda.get_device_name(i)}, VRAM: {torch.cuda.get_device_properties(i).total_memory / (1024**3):.2f} GB")
     except:
         pass
+    
     # Disk Space
     report.append("\nDISK:")
     try:
@@ -380,21 +548,24 @@ def generate_troubleshooting_report(in_model_config_file=None):
         report.append(f"  Total: {disk.total / (1024**3):.2f} GB.  Free: {disk.free / (1024**3):.2f} GB, Used: {disk.used / (1024**3):.2f} GB")
     except Exception as e:
         report.append(f"  Could not get disk info: {str(e)}")
+    
     # 2. Software Information
     report.append(f"\n{divider}")
     report.append("SOFTWARE INFORMATION")
-    #report.append(f"{divider}")
+    
     # OS Info
     report.append("\nOPERATING SYSTEM:")
     report.append(f"  System: {platform.system()}")
     report.append(f"  Release: {platform.release()}")
     report.append(f"  Version: {platform.version()}")
     report.append(f"  Machine: {platform.machine()}")
+    
     # Python Info
     report.append("\nPYTHON:")
     report.append(f"  Version: {platform.python_version()}")
     report.append(f"  Implementation: {platform.python_implementation()}")
-    report.append(f"  Executable: {sys.executable}")
+    report.append(f"  Executable: {anonymize_path(sys.executable)}")
+    
     # Installed packages
     report.append("\nINSTALLED PACKAGES (pip freeze):")
     try:
@@ -402,19 +573,19 @@ def generate_troubleshooting_report(in_model_config_file=None):
         report.append(pip_freeze)
     except Exception as e:
         report.append(f"  Could not get pip freeze output: {str(e)}")
+    
     # CUDA Info
     report.append("CUDA INFORMATION:")
     try:
-        # Check nvcc version
         nvcc_path = shutil.which('nvcc')
         if nvcc_path:
             nvcc_version = subprocess.check_output(['nvcc', '--version'], encoding='utf-8')
             report.append(nvcc_version.strip())
-#            report.append(nvcc_version.split('\n')[0])
         else:
             report.append("NVCC not found in PATH")
     except Exception as e:
         report.append(f"  Could not get NVCC version: {str(e)}")
+    
     # PyTorch CUDA version if available
     try:
         if 'torch' in sys.modules:
@@ -427,34 +598,43 @@ def generate_troubleshooting_report(in_model_config_file=None):
                 report.append(f"  Device name: {torch.cuda.get_device_name(0)}")
     except Exception as e:
         report.append(f"  Could not get PyTorch CUDA info: {str(e)}")
+    
     # 3. Model Configuration
     if in_model_config_file:
         report.append(f"\n{divider}")
         report.append("MODEL CONFIGURATION")
-        #report.append(f"{divider}")
+        
         try:
-            # Read config file content
             with open(in_model_config_file, 'r') as f:
                 config_content = f.read()
-            report.append(f"Content of {in_model_config_file}:")
+            report.append(f"Content of {anonymize_path(in_model_config_file)}:")
             report.append(config_content)
         except Exception as e:
-            report.append(f"\nCould not read model config file {in_model_config_file}: {str(e)}")
+            report.append(f"\nCould not read model config file {anonymize_path(in_model_config_file)}: {str(e)}")
+    
     # 4. Environment Variables
     report.append(f"\n{divider}")
     report.append("RELEVANT ENVIRONMENT VARIABLES")
-    #report.append(f"{divider}")
+    
     relevant_env_vars = [
         'PATH', 'LD_LIBRARY_PATH', 'CUDA_HOME', 'CUDA_PATH',
         'PYTHONPATH', 'CONDA_PREFIX', 'VIRTUAL_ENV'
     ]
+    
     for var in relevant_env_vars:
         if var in os.environ:
-            report.append(f"{var}: {os.environ[var]}")
+            # Anonymize paths in environment variables
+            if var in ['PATH', 'LD_LIBRARY_PATH', 'PYTHONPATH']:
+                paths = os.environ[var].split(os.pathsep)
+                anonymized_paths = [anonymize_path(p) for p in paths]
+                report.append(f"{var}: {os.pathsep.join(anonymized_paths)}")
+            else:
+                report.append(f"{var}: {anonymize_path(os.environ[var])}")
+    
     # 5. Additional System Info
     report.append(f"\n{divider}")
     report.append("ADDITIONAL SYSTEM INFORMATION")
-    #report.append(f"{divider}")
+    
     try:
         # Check if running in container
         report.append("\nContainer/Virtualization:")
@@ -475,19 +655,21 @@ def generate_troubleshooting_report(in_model_config_file=None):
             pass
     except Exception as e:
         report.append(f"  Could not check container/virtualization info: {str(e)}")
+    
     # Final divider
-    #report.append(f"\n{divider}")
     report.append("END OF REPORT")
     report.append(f"{divider}")
+    
     # Join all report lines
     full_report = '\n'.join(report)
     return full_report
-#END SYSREPORT###################################################################
-
+####END SYS REPORT########################################################################
 # Update the config file
 update_model_paths_file(in_dotenv_needed_models, in_dotenv_needed_paths, in_dotenv_needed_params, in_model_config_file)
+
 # Read back the values
 out_dotenv_loaded_models, out_dotenv_loaded_paths, out_dotenv_loaded_params , out_dotenv_loaded_models_values= parse_model_paths_file(in_model_config_file, in_dotenv_needed_models,in_dotenv_needed_paths)
+
 if debug_mode:
     print("Loaded models:", out_dotenv_loaded_models)
     print("Loaded models values:", out_dotenv_loaded_models_values)
@@ -498,6 +680,8 @@ if "HF_HOME" in in_dotenv_needed_paths:
     os.environ['HF_HOME'] = out_dotenv_loaded_paths["HF_HOME"]
 os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
 #os.environ["TOKENIZERS_PARALLELISM"] = "true"
+#CORE BLOCK END###############################################################################
+
 
 #originalblock#################################
 import argparse
