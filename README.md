@@ -155,7 +155,11 @@ I am not using Conda but the original Free Open Source Python. This guide assume
 
 **Automated Software development setup**
 
-If you want a fully free and open source, no strings attached, automated, beginner friendly but efficient way to setup a software development environment for AI and Python, you can use my other project: CrossOS_Setup, which setups your Mac, Windows or Linux PC automatically to a full fledged AI Software Development station. It includes a system checker to assess how well installed your current setup is, before you install anything:
+If:
+- your pc is not setup for AI yet (python, latest CUDA installed and setup, code editors, sublibraries like ffmpeg, espeak)
+- you want a fully free and open source, no strings attached, automated, beginner friendly but efficient way to setup a software development environment for AI and Python
+
+you can use my other project: CrossOS_Setup, which setups your Mac, Windows or Linux PC automatically to be fully setup for AI Software Development. It includes a system checker to assess how well installed your current setup is, before you install anything:
 
 https://github.com/loscrossos/crossos_setup
 
