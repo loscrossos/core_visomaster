@@ -165,6 +165,7 @@ https://github.com/loscrossos/crossos_setup
 
 Thats what i use for all my development across all my systems. All my projects run out of the box if you PC is setup with it.
 
+If you are already setup and happy thats ok. Its not a requirement.  
 
 ## Project Installation
 
