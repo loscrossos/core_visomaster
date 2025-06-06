@@ -109,10 +109,22 @@ start the app with:
 Stop the app pressing `ctrl + c` on the console
 
 
+## Step-by-Step video guide
+
+you can watch step-by-step guides for your OS. This is the same information as the next chapter.
 
 
-## Pre-Requisites
+OS	    | Step-by-step install tutorial
+---	    | ---
+Mac	    | todo
+Windows	| todo
+Linux  	| todo
 
+
+
+## Step-by-Step install guide
+
+### Pre-Requisites
 In general you should have your PC setup for AI development when trying out AI models, LLMs and the likes. If you have some experience in this area, you likely already fulfill most if not all of these items. visomaster has however light requirements on the hardware.
 
 
@@ -167,7 +179,7 @@ Thats what i use for all my development across all my systems. All my projects r
 
 If you are already setup and happy thats ok. Its not a requirement.  
 
-## Project Installation
+### Project Installation
 
 If you setup your development environment using my `Crossos_Setup` project, you can do this from a normal non-admin account (which you should actually be doing anyway for your own security).
 
@@ -207,7 +219,7 @@ Thats it.
 At this point you *could* just start the apps and start generating away... but it would first automatically download the models (11GB of them). If you dont have the models yet thats ok. But if you have already downloaded them OR if you have a dual/trial/multiboot machine and want to make them portable, read on...
 
 
-## Model Installation
+### Model Installation
 
 The needed models are about 6GB in total. You can get them in 3 ways:
 - **Automatic Download** as huggingface cache (easiest way)
@@ -220,14 +232,15 @@ e.g. `python appstudio.py --checkmodels`
 The app will report the models it sees and quit without downloading or loading anything.
 
 
-### Automatic download
+**Automatic download**
+
 just start the app. 
 
 Missing models will be downloaded. This is for when you never had the app installed before. The models will be downloaded to a huggingface-type folder in the "models" directory. This is ok if you want the most easy solution and dont care about portability (which is ok!). This is not reccomended as its not very reusable for software developers: e.g. if you want to do coding against the models from another project or want to store the models later. This supports multi-boot.
 
 
 
-### Re-use existing models
+**Re-use existing models**
 
 
 You can re-use your existing models by configuring the path in the configuration file `modelconfig.txt`.
@@ -237,7 +250,7 @@ You can use absolute or relative paths. If you have a multiboot-Setup (e.g. dual
 
 There are 2 types of model downloads: the hugginface (hf) cache and manual model download.
 
-### Integrity check
+**Integrity check**
 
 If you think some models are damaged you can force a model integrity check and download missing by running: `python appvisomaster.py --integritycheck`
 
@@ -261,7 +274,7 @@ FINAL RESULT: It seems all model directories were found. Nothing will be downloa
 
 
 
-## Update
+### Update
 
 If you ever need to update the app
 - because you know that the repository changed
