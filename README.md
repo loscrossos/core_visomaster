@@ -246,6 +246,43 @@ e.g. `python appstudio.py --checkmodels`
 FINAL RESULT: It seems all model directories were found. Nothing will be downloaded!
 ```
 
+
+
+## Update
+
+If you ever need to update the app
+- because you know that the repository changed
+- you filed a bug and it got fixed
+
+**update repository**
+
+you can safely do so by starting a terminal in the repository directory and typing:
+```
+git pull
+```
+if you didnt change any original files this will safely update your app. Its ok to change configuration files (e.g. `configmodels.txt`) that were generated after cloning.
+
+**update virtual environment**
+
+
+If the requirements file changed you can safely update by deleting the old directory (`.env_mac/.env_win/env_lin`)
+
+and recreating it using the steps above:
+- create env
+- activate env
+- pip install
+
+
+
+
+
+
+
+
+
+
+
+
 # Usage 
 
 You can use app as you always have. Just start the app and be creative!
