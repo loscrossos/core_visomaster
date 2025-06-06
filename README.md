@@ -25,7 +25,7 @@
   - **TensorRT Support**: Leverages supported GPUs for ultra-fast processing  
   - **Many More Advanced Features** 
 
-- core Visomaster extra features:
+- **core hardened extra features:**
   - Works on Windows and Linux.
   - Full support for all CUDA cards (yes, RTX 50 series Blackwell too)
   - Automatic model download and model self-repair (redownloads damaged files)
