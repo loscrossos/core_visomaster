@@ -54,7 +54,12 @@ The installation in general consists of:
 
 ## TLDR Installation
 
-- You need ffmpeg installed before using the app
+
+- You need these installed before using the app:
+  - ffmpeg installed and configured available from command line
+  - python 3.10
+  - git
+  - NVidia/Cuda drivers up-to-date
 
 **Windows**
 ```
