@@ -46,9 +46,9 @@ The installation in general consists of:
 - Pre-Requisites: Check that your system can actually run the model
 - Project Installation. It consists of 
     - cloning the repository
-    - creating a virtual environment
+    - creating and activating a virtual environment
     - installing the requirements
-    - optionally: re-using existing models
+    - getting the models (optionally re-using existing models)
     - starting the app.
 
 
